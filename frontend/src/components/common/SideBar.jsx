@@ -7,35 +7,36 @@ import { Link } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const Sidebar = () => {
-	const queryClient=useQueryClient();
-	const {mutate:logout }=useMutation({
-		mutationFn:async()=>{
+	const queryClient = useQueryClient();
+	const { mutate: logout } = useMutation({
+		mutationFn: async () => {
+			const API_BASE = import.meta.env.VITE_BACKEND_URL;
+
 			try {
-				const res=await fetch("/api/auth/logout",{
-					method:"POST",
-				})
-				// when i click to the logout page .. it leads to unauthorized user hence return error.
-				// now this error will help us to go back to login page hence returning null;
-				const data=await res.json();
-				if(!res.ok)
-					{
-						throw new Error(data.error|| "Something Went Wrong");
-					}
+				const res = await fetch(`${API_BASE}/api/auth/logout`, {
+					method: "POST",
+				});
+				const data = await res.json();
+				if (!res.ok) {
+					throw new Error(data.error || "Something Went Wrong");
+				}
 			} catch (error) {
 				throw new Error(error);
 			}
 		},
-		onSuccess:()=>{
+		onSuccess: () => {
 			//toast.success("Logout successful");
-			queryClient.invalidateQueries({queryKey:["authUser"]});
+			queryClient.invalidateQueries({ queryKey: ["authUser"] });
 		},
-		onError:()=>{
+		onError: () => {
 			toast.error("Logout Failed");
 		}
 	})
-const {data:authUser}=useQuery({queryKey:["authUser"]});
+	const { data: authUser } = useQuery({ queryKey: ["authUser"] });
 
 	return (
 		<div className='md:flex-[2_2_0] w-18 max-w-52 text-purple-400'>
@@ -88,11 +89,11 @@ const {data:authUser}=useQuery({queryKey:["authUser"]});
 								<p className='text-white font-bold text-sm w-20 truncate'>{authUser?.fullName}</p>
 								<p className='text-slate-500 text-sm'>@{authUser?.username}</p>
 							</div>
-							<BiLogOut className='w-5 h-5 cursor-pointer' 
-							onClick={(e)=>{
-                           e.preventDefault();
-						   logout();
-							}}
+							<BiLogOut className='w-5 h-5 cursor-pointer'
+								onClick={(e) => {
+									e.preventDefault();
+									logout();
+								}}
 							/>
 						</div>
 					</Link>

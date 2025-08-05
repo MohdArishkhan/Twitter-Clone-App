@@ -7,39 +7,44 @@ import { MdOutlineMail } from "react-icons/md";
 import { MdPassword } from "react-icons/md";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const LoginPage = () => {
 	const [formData, setFormData] = useState({
 		username: "",
 		password: "",
 	});
-	const queryClient=useQueryClient();
-const {mutate:loginMutation,isPending, isError,error}=useMutation({
-	mutationFn:async ({username, password})=>{
-		try {
-			const res=await fetch("/api/auth/login",{
-				method:"POST",
-				headers:{
-					"Content-Type":"application/json"
-				},
-				body:JSON.stringify({username,password}),
-			});
-			const data= await res.json();
-			if(!res.ok)
-				{
-					throw new Error(data.error ||"Something went Wrong");
+	const queryClient = useQueryClient();
+	const { mutate: loginMutation, isPending, isError, error } = useMutation({
+		mutationFn: async ({ username, password }) => {
+			try {
+				const res = await fetch(
+					`${import.meta.env.VITE_API_URL}/api/auth/login`,
+					{
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify({ username, password }),
+						credentials: "include" // agar cookies/session chahiye to
+					}
+				);
+				const data = await res.json();
+				if (!res.ok) {
+					throw new Error(data.error || "Something went Wrong");
 				}
-		} catch (error) {
-			throw new Error(error);
+			} catch (error) {
+				throw new Error(error);
+			}
+
+		},
+		// after successful login go to home page
+		onSuccess: () => {
+			// refetch the authUser query to update the UI
+			queryClient.invalidateQueries({ queryKey: ["authUser"] });
 		}
-	
-	},
-	// after successful login go to home page
-	onSuccess:()=>{
-	// refetch the authUser query to update the UI
-  queryClient.invalidateQueries({queryKey:["authUser"]});
-	}
-});
+	});
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		loginMutation(formData);
@@ -88,7 +93,7 @@ const {mutate:loginMutation,isPending, isError,error}=useMutation({
 						/>
 					</label>
 					<button className='btn rounded-full btn-primary text-white'>
-						{isPending?"Loading...":"Login"}
+						{isPending ? "Loading..." : "Login"}
 					</button>
 					{isError && <p className='text-red-500'>{error.message}</p>}
 				</form>

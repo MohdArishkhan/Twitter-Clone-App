@@ -24,8 +24,10 @@ const Post = ({ post }) => {
 
 	const { mutate: deletePost, isPending: isDeleting } = useMutation({
 		mutationFn: async () => {
+			const API_BASE = import.meta.env.VITE_BACKEND_URL;
+
 			try {
-				const res = await fetch(`/api/post/${post._id}`, {
+				const res = await fetch(`${API_BASE}/api/post/${post._id}`, {
 					method: "DELETE",
 				});
 				const data = await res.json();
@@ -236,9 +238,8 @@ const Post = ({ post }) => {
 								)}
 
 								<span
-									className={`text-sm  group-hover:text-pink-500 ${
-										isLiked ? "text-pink-500" : "text-slate-500"
-									}`}
+									className={`text-sm  group-hover:text-pink-500 ${isLiked ? "text-pink-500" : "text-slate-500"
+										}`}
 								>
 									{post.likes.length}
 								</span>

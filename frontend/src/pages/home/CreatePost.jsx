@@ -2,51 +2,55 @@ import { CiImageOn } from "react-icons/ci";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import { useRef, useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query"
-import {toast} from "react-hot-toast"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { toast } from "react-hot-toast"
+import dotenv from 'dotenv';
+dotenv.config();
+
 const CreatePost = () => {
 	const [text, setText] = useState("");
 	const [img, setImg] = useState(null);
 
 	const imgRef = useRef(null);
 
-	const {data:authUser}=useQuery({queryKey:['authUser']});
-	const queryClient=useQueryClient();
-	const {mutate:CreatePost,isPending,isError,error}=useMutation({
-		mutationFn:async({text,img})=>{
+	const { data: authUser } = useQuery({ queryKey: ['authUser'] });
+	const queryClient = useQueryClient();
+	const { mutate: CreatePost, isPending, isError, error } = useMutation({
+		mutationFn: async ({ text, img }) => {
 			try {
-			
-				const res=await fetch("/api/post/create",{
-					method:"POST",
-					headers:{
-						"Content-Type":"application/json",
-
-					},
-			 	body:JSON.stringify({text,img}),
-				})
-				const data = await res.json();
-				if(!res.ok)
+				const res = await fetch(
+					`${import.meta.env.VITE_API_URL}/api/post/create`,
 					{
-						throw new Error(data.error || "Something went wrong");
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({ text, img }),
+						credentials: "include", // agar login session/cookies chahiye
 					}
+				);
+				const data = await res.json();
+				if (!res.ok) {
+					throw new Error(data.error || "Something went wrong");
+				}
 				return data;
 			} catch (error) {
 				throw new Error(error);
 			}
 		},
-		onSuccess:()=>{
+		onSuccess: () => {
 			setText("");
 			setImg(null);
 			toast.success("Post created successfully");
-			queryClient.invalidateQueries({queryKey:['posts']})
+			queryClient.invalidateQueries({ queryKey: ['posts'] })
 		}
 	})
-	
+
 
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		CreatePost({text,img});
+		CreatePost({ text, img });
 	};
 
 	const handleImgChange = (e) => {
@@ -95,14 +99,14 @@ const CreatePost = () => {
 						/>
 						<BsEmojiSmileFill className='fill-primary w-5 h-5 cursor-pointer' />
 					</div>
-					<input type='file'accept="image/*" hidden ref={imgRef} onChange={handleImgChange} />
+					<input type='file' accept="image/*" hidden ref={imgRef} onChange={handleImgChange} />
 					<button className='btn btn-primary rounded-full btn-sm text-white px-4'>
 						{isPending ? "Posting..." : "Post"}
 					</button>
 				</div>
 				{isError && <div className='text-red-500'>
-					 {error.message}
-			    </div>}
+					{error.message}
+				</div>}
 			</form>
 		</div>
 	);

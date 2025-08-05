@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link,useMatch,useParams } from "react-router-dom";
+import { Link, useMatch, useParams } from "react-router-dom";
 
 import Posts from "../../components/common/Posts";
 import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderSkeleton";
@@ -13,47 +13,54 @@ import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatMemberSinceDate } from "../../utils/date/index.js";
-import  useFollow from "../../hooks/useFollow" 
+import useFollow from "../../hooks/useFollow"
 import useUpdateUserProfile from "../../hooks/useUpdateUserProfile.jsx";
+import dotenv from 'dotenv';
+dotenv.config();
+
 const ProfilePage = () => {
-	
+
 	const [coverImg, setCoverImg] = useState(null);
 	const [profileImg, setProfileImg] = useState(null);
 	const [feedType, setFeedType] = useState("posts");
 
 	const coverImgRef = useRef(null);
 	const profileImgRef = useRef(null);
-     const {username}=useParams();
-	 const queryClient =useQueryClient();
-	const {data:authUser} = useQuery({queryKey:["authUser"]})
+	const { username } = useParams();
+	const queryClient = useQueryClient();
+	const { data: authUser } = useQuery({ queryKey: ["authUser"] })
 
 
-   const {follow, isPending}=useFollow()
+	const { follow, isPending } = useFollow()
 
-  const {data:user,isLoading,refetch,isRefetching}=useQuery({
-	queryKey:["userProfile"],
-	queryFn:async()=>{
-		try {
-			const res=await fetch(`/api/users/profile/${username}`);
-			const data=await res.json();
-			if(!res.ok)
-				{
+	const { data: user, isLoading, refetch, isRefetching } = useQuery({
+		queryKey: ["userProfile"],
+		queryFn: async () => {
+			try {
+				const res = await fetch(
+					`${import.meta.env.VITE_API_URL}/api/users/profile/${username}`,
+					{
+						method: "GET",
+						credentials: "include", // agar cookies/session ka use ho raha hai
+					}
+				);
+				const data = await res.json();
+				if (!res.ok) {
 					throw new Error(data.error || "Something went wrong");
 				}
 				return data;
+			} catch (error) {
+				throw new Error(error);
+			}
+		},
+	});
 
-		} catch (error) {
-			throw new Error(error);
-		}
-	},
-  });
+	const { updateProfile, isUpdatingProfile } = useUpdateUserProfile();
+	const isMyProfile = authUser._id === user?._id;
+	const MemberSinceDate = formatMemberSinceDate(user?.createdAt);
+	const amIfollowing = authUser?.following.includes(user?._id);
 
-const {updateProfile,isUpdatingProfile}=useUpdateUserProfile();
-  const isMyProfile = authUser._id === user?._id;
-  const MemberSinceDate=formatMemberSinceDate(user?.createdAt);
-const amIfollowing= authUser?.following.includes(user?._id);
-
-  const handleImgChange = (e, state) => {
+	const handleImgChange = (e, state) => {
 		const file = e.target.files[0];
 		if (file) {
 			const reader = new FileReader();
@@ -64,17 +71,17 @@ const amIfollowing= authUser?.following.includes(user?._id);
 			reader.readAsDataURL(file);
 		}
 	};
-   useEffect(()=>{
-	refetch()
-   },[username,refetch])
+	useEffect(() => {
+		refetch()
+	}, [username, refetch])
 	return (
 		<>
 			<div className='flex-[4_4_0]  border-r border-gray-700 min-h-screen '>
 				{/* HEADER */}
-				{(isLoading|| isRefetching)&& <ProfileHeaderSkeleton />}
-				{!isLoading &&!isRefetching && !user && <p className='text-center text-lg mt-4'>User not found</p>}
+				{(isLoading || isRefetching) && <ProfileHeaderSkeleton />}
+				{!isLoading && !isRefetching && !user && <p className='text-center text-lg mt-4'>User not found</p>}
 				<div className='flex flex-col'>
-					{!isLoading &&!isRefetching&& user && (
+					{!isLoading && !isRefetching && user && (
 						<>
 							<div className='flex gap-10 px-4 py-2 items-center'>
 								<Link to='/'>
@@ -104,14 +111,14 @@ const amIfollowing= authUser?.following.includes(user?._id);
 								<input
 									type='file'
 									hidden
-                                    accept="image/*"
+									accept="image/*"
 									ref={coverImgRef}
 									onChange={(e) => handleImgChange(e, "coverImg")}
 								/>
 								<input
 									type='file'
 									hidden
-                                    accept="image/*"
+									accept="image/*"
 									ref={profileImgRef}
 									onChange={(e) => handleImgChange(e, "profileImg")}
 								/>
@@ -140,14 +147,14 @@ const amIfollowing= authUser?.following.includes(user?._id);
 										{isPending && "Loading..."}
 										{!isPending && amIfollowing && "Unfollow"}
 										{!isPending && !amIfollowing && "follow"}
-									
+
 									</button>
 								)}
 								{(coverImg || profileImg) && (
 									<button
 										className='btn btn-primary rounded-full btn-sm text-white px-4 ml-2'
-										onClick={() =>updateProfile({coverImg,profileImg}) }>
-										{isUpdatingProfile?"Updating...":"Update"}
+										onClick={() => updateProfile({ coverImg, profileImg })}>
+										{isUpdatingProfile ? "Updating..." : "Update"}
 									</button>
 								)}
 							</div>
@@ -216,7 +223,7 @@ const amIfollowing= authUser?.following.includes(user?._id);
 						</>
 					)}
 
-					<Posts feedType={feedType} username={username} userId={user?._id}  />
+					<Posts feedType={feedType} username={username} userId={user?._id} />
 				</div>
 			</div>
 		</>

@@ -1,24 +1,26 @@
 import { Link } from "react-router-dom";
 import RightPanelSkeleton from "../skeletons/RightPanelSkeleton";
 //import { USERS_FOR_RIGHT_PANEL } from "../../utils/db/dummy";
-import {useQuery} from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import useFollow from "../../hooks/useFollow";
-import LoadingSpinner from "./LoadingSpinner"
-const RightPanel = () => {
-	const {data:suggestedUsers, isLoading}=useQuery({
-		queryKey:["suggestedUsers"],
-		queryFn:async()=>{
-			try{
-				const res=await fetch("/api/users/suggested");
-				const data=await res.json();
-				if(!res.ok)
-					{
-						throw new Error(data.message|| "something went wrong");
-					}
-					return data;
+import LoadingSpinner from "./LoadingSpinner";
+import dotenv from 'dotenv';
+dotenv.config();
 
-			}catch(error)
-			{
+const RightPanel = () => {
+	const { data: suggestedUsers, isLoading } = useQuery({
+		queryKey: ["suggestedUsers"],
+		queryFn: async () => {
+			const API_BASE = import.meta.env.VITE_BACKEND_URL;
+
+			try {
+				const res = await fetch(`${API_BASE}/api/users/suggested`);
+				const data = await res.json();
+				if (!res.ok) {
+					throw new Error(data.message || "Something went wrong");
+				}
+				return data;
+			} catch (error) {
 				throw new Error(error.message);
 			}
 		}
@@ -67,7 +69,7 @@ const RightPanel = () => {
 											follow(user._id);
 										}}
 									>
-									{isPending ? <LoadingSpinner size='sm' /> : "Follow"}
+										{isPending ? <LoadingSpinner size='sm' /> : "Follow"}
 									</button>
 								</div>
 							</Link>
