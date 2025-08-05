@@ -22,7 +22,7 @@ cloudinary.config({
 const app = express();
 const __dirname = path.resolve();
 app.use(cors({
-  origin: "http://localhost:3001", 
+  origin: "http://localhost:3000", 
   credentials: true                
 }));
 app.use(cors());
