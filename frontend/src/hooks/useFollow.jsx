@@ -8,16 +8,19 @@ const useFollow = () => {
 	const { mutate: follow, isPending } = useMutation({
 		mutationFn: async (userId) => {
 			try {
-				const res = await fetch(`/api/users/follow/${userId}`, {
+				const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/follow/${userId}`, {
 					method: "POST",
+					credentials: "include", // 🔐 Required for sending auth cookie
 				});
 
 				const data = await res.json();
+
 				if (!res.ok) {
 					throw new Error(data.error || "Something went wrong!");
 				}
+
 				return;
-			}catch (error) {
+			} catch (error) {
 				throw new Error(error.message);
 			}
 		},

@@ -18,20 +18,21 @@ const CreatePost = () => {
 	const { mutate: CreatePost, isPending, isError, error } = useMutation({
 		mutationFn: async ({ text, img }) => {
 			try {
-			
-				const res=await fetch("/api/post/create",{
-					method:"POST",
-					headers:{
-						"Content-Type":"application/json",
-
+				const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/post/create`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
 					},
-			 	body:JSON.stringify({text,img}),
-				})
+					body: JSON.stringify({ text, img }),
+					credentials: "include", // 🔐 Include auth cookie
+				});
+
 				const data = await res.json();
-				if(!res.ok)
-					{
-						throw new Error(data.error || "Something went wrong");
-					}
+
+				if (!res.ok) {
+					throw new Error(data.error || "Something went wrong");
+				}
+
 				return data;
 			} catch (error) {
 				throw new Error(error);

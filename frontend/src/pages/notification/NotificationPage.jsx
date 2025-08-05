@@ -15,9 +15,13 @@ const NotificationPage = () => {
 		queryFn: async () => {
 
 			try {
-				const res=await(fetch("/api/notifications"));
-				const data=await res.json();
-				if(!res.ok) throw new Error(data.error ||"Something went wrong");
+				const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/notifications`, {
+					credentials: "include", // 🔐 Send auth cookie
+				});
+				const data = await res.json();
+
+				if (!res.ok) throw new Error(data.error || "Something went wrong");
+
 				return data;
 			} catch (error) {
 				throw new Error(error.message);
@@ -28,11 +32,15 @@ const NotificationPage = () => {
 	const { mutate: deleteNotifications } = useMutation({
 		mutationFn: async () => {
 			try {
-				const res = await fetch("/api/notifications", {
+				const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/notifications`, {
 					method: "DELETE",
+					credentials: "include", // ✅ send cookies (auth token)
 				});
+
 				const data = await res.json();
+
 				if (!res.ok) throw new Error(data.error || "Something went wrong");
+
 				return data;
 			} catch (error) {
 				throw new Error(error);

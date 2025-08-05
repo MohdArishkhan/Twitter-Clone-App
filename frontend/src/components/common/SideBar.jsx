@@ -17,16 +17,15 @@ const Sidebar = () => {
 			const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
 			try {
-				const res=await fetch("/api/auth/logout",{
-					method:"POST",
-				})
-				// when i click to the logout page .. it leads to unauthorized user hence return error.
-				// now this error will help us to go back to login page hence returning null;
-				const data=await res.json();
-				if(!res.ok)
-					{
-						throw new Error(data.error|| "Something Went Wrong");
-					}
+				const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`, {
+					method: "POST",
+					credentials: "include", // 🔐 send token cookie!
+				});
+				const data = await res.json();
+
+				if (!res.ok) {
+					throw new Error(data.error || "Something Went Wrong");
+				}
 			} catch (error) {
 				throw new Error(error);
 			}

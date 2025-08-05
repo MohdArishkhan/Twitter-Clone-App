@@ -27,8 +27,9 @@ const Post = ({ post }) => {
 			const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
 			try {
-				const res = await fetch(`/api/post/${post._id}`, {
+				const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/post/${post._id}`, {
 					method: "DELETE",
+					credentials: "include",
 				});
 				const data = await res.json();
 

@@ -18,16 +18,21 @@ function App() {
     queryKey: ['authUser'],
     queryFn: async () => {
       try {
-      const res=await fetch("/api/auth/me");
-      const data=await res.json();
-      if(data.error) return null;
-      if(!res.ok)
-        {
-          throw new Error(data.error ||"Something went wrong");
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/me`, {
+          credentials: "include", // ✅ Required to send auth token cookie
+        });
+
+        const data = await res.json();
+
+        if (data.error) return null;
+
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong");
         }
-        console.log("authUser is here :",data);
+
+        console.log("authUser is here:", data);
         return data;
-    } catch (error) {
+      } catch (error) {
         throw new Error(error);
       }
     },

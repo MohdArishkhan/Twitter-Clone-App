@@ -1,26 +1,25 @@
 import Post from "./Post";
 import PostSkeleton from "../skeletons/PostSkeleton";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 const Posts = ({ feedType, username, userId }) => {
-	const getPostEndpoint = () => {
+	const base = import.meta.env.VITE_BACKEND_URL;
+
+	const POST_ENDPOINT = useMemo(() => {
 		switch (feedType) {
 			case "forYou":
-				return "/api/post/all";
+				return `${base}/api/post/all`;
 			case "following":
-				return "/api/post/following";
+				return `${base}/api/post/following`;
 			case "posts":
-				return `/api/post/user/${username}`;
+				return `${base}/api/post/user/${username}`;
 			case "likes":
-				return `api/post/likes/${userId}`;
+				return `${base}/api/post/likes/${userId}`;
 			default:
-				return "/api/post/all";
-
+				return `${base}/api/post/all`;
 		}
-	};
-
-	const POST_ENDPOINT = getPostEndpoint();
+	}, [feedType, username, userId]);
 
 	const {
 		data: posts,
@@ -28,26 +27,26 @@ const Posts = ({ feedType, username, userId }) => {
 		refetch,
 		isRefetching,
 	} = useQuery({
-		queryKey: ["posts"],
+		queryKey: ["posts", feedType, username, userId],
 		queryFn: async () => {
-			try {
-				const res = await fetch(POST_ENDPOINT);
-				const data = await res.json();
+			const res = await fetch(POST_ENDPOINT, {
+				credentials: "include", // ✅ important for auth
+			});
+			const data = await res.json();
 
-				if (!res.ok) {
-					throw new Error(data.error || "Something went wrong");
-				}
-
-				return data;
-			} catch (error) {
-				throw new Error(error);
+			if (!res.ok) {
+				throw new Error(data.error || "Something went wrong");
 			}
+
+			return data;
 		},
+		enabled: !!POST_ENDPOINT, // avoids running if undefined
 	});
 
+	// Refetch when feedType/username changes
 	useEffect(() => {
 		refetch();
-	}, [feedType, refetch, username]);
+	}, [feedType, username, userId, refetch]);
 
 	return (
 		<>
@@ -58,18 +57,20 @@ const Posts = ({ feedType, username, userId }) => {
 					<PostSkeleton />
 				</div>
 			)}
+
 			{!isLoading && !isRefetching && posts?.length === 0 && (
 				<p className='text-center my-4'>No posts in this tab. Switch 👻</p>
 			)}
+
 			{!isLoading && !isRefetching && posts && (
 				<div>
 					{posts.map((post) => (
 						<Post key={post._id} post={post} />
 					))}
-
 				</div>
 			)}
 		</>
 	);
 };
+
 export default Posts;

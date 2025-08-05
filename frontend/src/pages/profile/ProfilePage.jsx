@@ -37,15 +37,18 @@ const ProfilePage = () => {
 		queryKey: ["userProfile"],
 		queryFn: async () => {
 			try {
-			const res=await fetch(`/api/users/profile/${username}`);
-			const data=await res.json();
-			if(!res.ok)
-				{
+				const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/profile/${username}`, {
+					credentials: "include", // 🔐 Needed if route is protected
+				});
+
+				const data = await res.json();
+
+				if (!res.ok) {
 					throw new Error(data.error || "Something went wrong");
 				}
-				return data;
 
-		}catch (error) {
+				return data;
+			} catch (error) {
 				throw new Error(error);
 			}
 		},

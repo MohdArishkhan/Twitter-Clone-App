@@ -8,17 +8,21 @@ const useUpdateUserProfile = () => {
 	const { mutateAsync: updateProfile, isPending: isUpdatingProfile } = useMutation({
 		mutationFn: async (formData) => {
 			try {
-				const res = await fetch(`/api/users/update`, {
+				const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/update`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
 					},
 					body: JSON.stringify(formData),
+					credentials: "include", // 🔐 Required to send token cookie
 				});
+
 				const data = await res.json();
+
 				if (!res.ok) {
 					throw new Error(data.error || "Something went wrong");
 				}
+
 				return data;
 			} catch (error) {
 				throw new Error(error.message);

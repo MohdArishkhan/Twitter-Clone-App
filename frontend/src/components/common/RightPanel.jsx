@@ -13,15 +13,17 @@ const RightPanel = () => {
 		queryFn: async () => {
 			const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
-			try{
-				const res=await fetch("/api/users/suggested");
-				const data=await res.json();
-				if(!res.ok)
-					{
-						throw new Error(data.message|| "something went wrong");
-					}
-					return data;
+			try {
+				const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/suggested`, {
+					credentials: "include", // 🔐 if you're using cookies or sessions
+				});
+				const data = await res.json();
 
+				if (!res.ok) {
+					throw new Error(data.message || "Something went wrong");
+				}
+
+				return data;
 			} catch (error) {
 				throw new Error(error.message);
 			}
