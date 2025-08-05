@@ -24,7 +24,7 @@ const __dirname = path.resolve();
 app.use(cors({
   origin: [
     "http://localhost:3000",                         
-    "https://twitter-clone-app-66g9.vercel.app"      // ✅ your deployed frontend
+    "https://twitter-web-arish.vercel.app/"      // ✅ your deployed frontend
   ],
   credentials: true, 
 }));
