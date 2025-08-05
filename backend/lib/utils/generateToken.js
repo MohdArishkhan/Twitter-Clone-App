@@ -1,12 +1,14 @@
 import jwt from "jsonwebtoken";
-export const generateTokenAndSetCookie=(userId,res)=>{
-    const token=jwt.sign({userId},process.env.JWT_SECRET,{
-        expiresIn:'15d'
-    })
-    res.cookie("jwt",token,{
-        maxAge:15*24*60*1000, // milliseconds
-        httpOnly:true,// prevent XSS attacks cross-site scripting attacks
-        sameSite:"strict",// CSRF attacks cross-site request forgery attacks
-        secure:process.env.NODE_ENV!=="development",
-    })
-}
+
+export const generateTokenAndSetCookie = (userId, res) => {
+	const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
+		expiresIn: "15d",
+	});
+
+	res.cookie("token", token, {
+		httpOnly: true, // Prevent JS access
+		secure: process.env.NODE_ENV !== "development", // Required for cross-origin
+		sameSite: "None", // Allow cross-site cookies
+		maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
+	});
+};
