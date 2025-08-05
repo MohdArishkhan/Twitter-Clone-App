@@ -2,10 +2,10 @@
   "name": "twitter",
   "version": "1.0.0",
   "description": "",
-  "main": "backend/server.js",
+  "main": "backend/index.js",
   "scripts": {
-    "dev": "nodemon backend/server.js",
-    "start": " node backend/server.js",
+    "dev": "nodemon index.js",
+    "start": " node index.js",
     "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "keywords": [],
