@@ -18,8 +18,11 @@ cloudinary.config({
 
 const app = express();
 app.use(cors({
-    origin: process.env.FRONTEND_URL, 
-    credentials: true
+  origin: [
+    "https://twitter-beta-one-vercel-app-ccpo.vercel.app", // new frontend
+    "https://twitter-beta-one-vercel-app.vercel.app",      // old frontend (optional)
+  ],
+  credentials: true
 }));
 const PORT = process.env.PORT || 5000;
 const __dirname=path.resolve()
