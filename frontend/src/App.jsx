@@ -9,8 +9,8 @@ import ProfilePage from "./pages/profile/ProfilePage"
 import { Toaster } from "react-hot-toast"
 import { useQuery } from "@tanstack/react-query"
 import LoadingSpinner from "./components/common/LoadingSpinner"
-import dotenv from 'dotenv';
-dotenv.config();
+// import dotenv from 'dotenv';
+// dotenv.config();
 
 function App() {
   const { data: authUser, isLoading } = useQuery({

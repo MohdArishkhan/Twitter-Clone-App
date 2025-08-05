@@ -15,8 +15,8 @@ import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/re
 import { formatMemberSinceDate } from "../../utils/date/index.js";
 import useFollow from "../../hooks/useFollow"
 import useUpdateUserProfile from "../../hooks/useUpdateUserProfile.jsx";
-import dotenv from 'dotenv';
-dotenv.config();
+// import dotenv from 'dotenv';
+// dotenv.config();
 
 const ProfilePage = () => {
 

@@ -4,8 +4,8 @@ import RightPanelSkeleton from "../skeletons/RightPanelSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import useFollow from "../../hooks/useFollow";
 import LoadingSpinner from "./LoadingSpinner";
-import dotenv from 'dotenv';
-dotenv.config();
+// import dotenv from 'dotenv';
+// dotenv.config();
 
 const RightPanel = () => {
 	const { data: suggestedUsers, isLoading } = useQuery({
