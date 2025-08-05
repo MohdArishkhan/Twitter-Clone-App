@@ -37,19 +37,15 @@ const ProfilePage = () => {
 		queryKey: ["userProfile"],
 		queryFn: async () => {
 			try {
-				const res = await fetch(
-					`${import.meta.env.VITE_API_URL}/api/users/profile/${username}`,
-					{
-						method: "GET",
-						credentials: "include", // agar cookies/session ka use ho raha hai
-					}
-				);
-				const data = await res.json();
-				if (!res.ok) {
+			const res=await fetch(`/api/users/profile/${username}`);
+			const data=await res.json();
+			if(!res.ok)
+				{
 					throw new Error(data.error || "Something went wrong");
 				}
 				return data;
-			} catch (error) {
+
+		}catch (error) {
 				throw new Error(error);
 			}
 		},

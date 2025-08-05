@@ -15,15 +15,9 @@ const NotificationPage = () => {
 		queryFn: async () => {
 
 			try {
-				const res = await fetch(
-					`${import.meta.env.VITE_API_URL}/api/notifications`,
-					{
-						method: "GET",
-						credentials: "include", // agar cookies/session chahiye
-					}
-				);
-				const data = await res.json();
-				if (!res.ok) throw new Error(data.error || "Something went wrong");
+				const res=await(fetch("/api/notifications"));
+				const data=await res.json();
+				if(!res.ok) throw new Error(data.error ||"Something went wrong");
 				return data;
 			} catch (error) {
 				throw new Error(error.message);

@@ -8,9 +8,8 @@ const useFollow = () => {
 	const { mutate: follow, isPending } = useMutation({
 		mutationFn: async (userId) => {
 			try {
-				const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/follow/${userId}`, {
+				const res = await fetch(`/api/users/follow/${userId}`, {
 					method: "POST",
-					credentials: "include", // agar auth/session cookies use ho rahi hain
 				});
 
 				const data = await res.json();
@@ -18,7 +17,7 @@ const useFollow = () => {
 					throw new Error(data.error || "Something went wrong!");
 				}
 				return;
-			} catch (error) {
+			}catch (error) {
 				throw new Error(error.message);
 			}
 		},

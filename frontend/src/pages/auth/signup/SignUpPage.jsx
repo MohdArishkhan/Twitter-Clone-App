@@ -24,18 +24,13 @@ const SignUpPage = () => {
 	const { mutate, isError, isPending, error } = useMutation({
 		mutationFn: async ({ email, username, fullName, password }) => {
 			try {
-				const res = await fetch(
-					`${import.meta.env.VITE_API_URL}/api/auth/signup`,
-					{
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify({ email, username, fullName, password }),
-						credentials: "include", // agar cookies/session chahiye
-					}
-				);
-
+				const res = await fetch("/api/auth/signup", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ email, username, fullName, password }),
+				});
 
 				const data = await res.json();
 				if (!res.ok) throw new Error(data.error || "Failed to create account");

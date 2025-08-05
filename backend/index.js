@@ -15,15 +15,7 @@ cloudinary.config({
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-
 const app = express();
-app.use(cors({
-  origin: [
-    "https://twitter-beta-one-vercel-app-ccpo.vercel.app", // new frontend
-    "https://twitter-beta-one-vercel-app.vercel.app",      // old frontend (optional)
-  ],
-  credentials: true
-}));
 const PORT = process.env.PORT || 5000;
 const __dirname=path.resolve()
 app.use(express.json({limit:"5mb"}));//to parse req.body
@@ -34,15 +26,13 @@ app.use("/api/users", userRoutes);
 app.use("/api/post", postroutes);
 app.use("/api/notifications",notificationroutes);
 
+if (process.env.NODE_ENV === "production") {
+	app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
-
-if (process.env.NODE_ENV === "production" && process.env.SERVE_FRONTEND === "true") {
-    app.use(express.static(path.join(__dirname, "/frontend/dist")));
-    app.get("*", (req, res) => {
-        res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
-    });
+	app.get("*", (req, res) => {
+		res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+	});
 }
-
 
 app.listen(PORT, () => {
     console.log(`server is running on port ${PORT}`);
