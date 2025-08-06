@@ -1,61 +1,57 @@
 import Post from "../models/postmodels.js";
 import User from "../models/usermodel.js";
-import {v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 import Notification from "../models/notification.js";
-export const createPost=async(req,res)=>{
-    try {
-        const {text}=req.body;
-        let {img}=req.body;
-        const userId=req.user._id.toString();
-        const user=await User.findById(userId);
-        if(!user) return res.status(404).json({message:"User not found"});
-        if(!text &&!img)
-            {
-                return res.status(400).json({error:"Post must have text or image"});
+export const createPost = async (req, res) => {
+	try {
+		const { text } = req.body;
+		let { img } = req.body;
+		const userId = req.user._id.toString();
+		const user = await User.findById(userId);
+		if (!user) return res.status(404).json({ message: "User not found" });
+		if (!text && !img) {
+			return res.status(400).json({ error: "Post must have text or image" });
 
-            }
-        if(img)
-            {
-                const uploadedResponse=await cloudinary.uploader.upload(img);
-                img=uploadedResponse.secure_url;
-            }    
-        const newPost=new Post({
-            user:userId,
-            text,
-            img,
-        });
-        await newPost.save();
-        res.status(201).json(newPost);
+		}
+		if (img) {
+			const uploadedResponse = await cloudinary.uploader.upload(img);
+			img = uploadedResponse.secure_url;
+		}
+		const newPost = new Post({
+			user: userId,
+			text,
+			img,
+		});
+		await newPost.save();
+		res.status(201).json(newPost);
 
-    } catch (error) {
-        res.status(500).json({ error: "Internal server error" });
+	} catch (error) {
+		res.status(500).json({ error: "Internal server error" });
 		console.log("Error in createPost controller: ", error);
-    }
+	}
 };
 
-export const deletePost=async (req,res)=>{
-    try {
-        const post=await Post.findById(req.params.id);
-        if(!post)
-            {
-                return res.status(404).json({error:"Post not found"});
-            }
-            if(post.user.toString()!==req.user._id.toString())
-                {
-                    return res.status(401).json({error:"You are not authorized to delete this post"})
-                }
-        if(post.img)
-            {
-                const imgId=post.img.split("/").pop().split(".")[0];
-                await cloudinary.uploader.destroy(imgId);
-            }
-            await Post.findByIdAndDelete(req.params.id);
-        res.status(200).json({message:"Post deleted successfully"});
+export const deletePost = async (req, res) => {
+	try {
+		const post = await Post.findById(req.params.id);
+		if (!post) {
+			return res.status(404).json({ error: "Post not found" });
+		}
+		console.log("post.user:", post.user);
+		if (!req.user || !post.user || post.user.toString() !== req.user._id.toString()) {
+			return res.status(401).json({ error: "You are not authorized to delete this post" });
+		}
+		if (post.img) {
+			const imgId = post.img.split("/").pop().split(".")[0];
+			await cloudinary.uploader.destroy(imgId);
+		}
+		await Post.findByIdAndDelete(req.params.id);
+		res.status(200).json({ message: "Post deleted successfully" });
 
-    } catch (error) {
-        console.log("Error in deletePost controller :",error);
-        res.status(500).json({error:"Internal server error"});
-    }
+	} catch (error) {
+		console.log("Error in deletePost controller :", error);
+		res.status(500).json({ error: "Internal server error" });
+	}
 };
 
 export const commentOnPost = async (req, res) => {
@@ -126,31 +122,31 @@ export const likeUnlikePost = async (req, res) => {
 		res.status(500).json({ error: "Internal server error" });
 	}
 };
-export const getAllPosts=async(req,res)=>{
-    try {
-         const posts=await Post.find().sort({createdAt:-1}).populate({
-            path:"user",
-            select:"-password"
-         })
-         .populate({
-            path:"comments.user",
-            select:"-password"
-         })
-         if(posts.length==0)
-            {
-                return res.status(200).json([]);
-            }
-            res.status(200).json(posts);
+export const getAllPosts = async (req, res) => {
+	try {
+		const posts = await Post.find().sort({ createdAt: -1 }).populate({
+			path: "user",
+			select: "-password"
+		})
+			.populate({
+				path: "comments.user",
+				select: "-password"
+			})
+		if (posts.length == 0) {
+			return res.status(200).json([]);
+		}
+		res.status(200).json(posts);
 
-;    } catch (error) {
-        console.log("Error in getAllPosts controller:",error);
-        res.status(500).json({error:"Internal server error"});
-    }
+		;
+	} catch (error) {
+		console.log("Error in getAllPosts controller:", error);
+		res.status(500).json({ error: "Internal server error" });
+	}
 };
 
-export const getLikedPost=async (req,res)=>{
-   // const userId=req.pramas.id;
-    const userId = req.params.id; 
+export const getLikedPost = async (req, res) => {
+	// const userId=req.pramas.id;
+	const userId = req.params.id;
 
 	try {
 		const user = await User.findById(userId);
