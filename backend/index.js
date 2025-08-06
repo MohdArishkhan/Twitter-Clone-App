@@ -23,11 +23,13 @@ const app = express();
 const __dirname = path.resolve();
 app.use(cors({
   origin: [
-    "http://localhost:3000",                         
-    "https://twitter-web-arish.vercel.app/"      // ✅ your deployed frontend
+    "http://localhost:3000",
+    "https://twitter-web-arish.vercel.app/",
+    "https://twitter-clone-app-plum.vercel.app/" // ✅ add this
   ],
-  credentials: true, 
+  credentials: true,
 }));
+
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
