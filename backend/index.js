@@ -24,8 +24,7 @@ const __dirname = path.resolve();
 app.use(cors({
   origin: [
     "http://localhost:3000",
-    "https://twitter-web-arish.vercel.app/",
-    "https://twitter-clone-app-plum.vercel.app/" // ✅ add this
+    "https://twitter-web-arish.vercel.app/"
   ],
   credentials: true,
 }));
